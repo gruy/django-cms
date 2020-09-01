@@ -465,6 +465,17 @@ class PlaceholderAdmin(BaseEditableAdminMixin, admin.ModelAdmin):
         response = plugin_instance.add_view(request)
         plugin = getattr(plugin_instance, 'saved_object', None)
 
+        if plugin:
+            plugin.placeholder.mark_as_dirty(plugin.language, clear_cache=False)
+
+            if parent:
+                _inst, _ = parent.get_plugin_instance()
+                if getattr(_inst, 'new_to_top', False):
+                    plugins = list(parent.get_descendants().order_by('position'))
+                    plugins = plugins[-1:] + plugins[0:-1]
+                    for _position, _plugin in enumerate(plugins):
+                        _plugin.update(position=_position)
+
         if plugin_instance._operation_token:
             self._send_post_placeholder_operation(
                 request,

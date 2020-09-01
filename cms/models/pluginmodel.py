@@ -167,10 +167,14 @@ class CMSPlugin(models.Model, metaclass=PluginModelBase):
     #: :class:`django:django.db.models.ForeignKey`: Parent plugin or ``None`` for plugins at root level in
     #: the placeholder
     parent = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True, editable=False)
+<<<<<<< HEAD
     #: :class:`django:django.db.models.SmallIntegerField`: Position (unique for placeholder and language)
     #: starting with 1 for the first plugin in the placeholder
     position = models.SmallIntegerField(_("position"), default=1, editable=False)
     #: :class:`django:django.db.models.CharField`: Language of the plugin
+=======
+    position = models.PositiveSmallIntegerField(_("position"), default=0, editable=False)
+>>>>>>> 3699b71dc (Insert plguin to top or to bottom by parent flag value)
     language = models.CharField(_("language"), max_length=15, blank=False, db_index=True, editable=False)
     #: `django:django.db.models.CharField`: Plugin type (name of the class as string)
     plugin_type = models.CharField(_("plugin_name"), max_length=50, db_index=True, editable=False)
