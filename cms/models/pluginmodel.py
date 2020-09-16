@@ -168,6 +168,7 @@ class CMSPlugin(models.Model, metaclass=PluginModelBase):
     #: `django:django.db.models.DateTimeField`: Datetime the plugin was last changed
     changed_date = models.DateTimeField(auto_now=True)
     child_plugin_instances = None
+    auth_only = models.BooleanField(_('show for auth users only'), default=False)
 
     class Meta:
         app_label = 'cms'
