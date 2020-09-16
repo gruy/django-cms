@@ -109,6 +109,7 @@ class CMSPlugin(MP_Node, metaclass=PluginModelBase):
     creation_date = models.DateTimeField(_("creation date"), editable=False, default=timezone.now)
     changed_date = models.DateTimeField(auto_now=True)
     child_plugin_instances = None
+    auth_only = models.BooleanField(_('show for auth users only'), default=False)
 
     class Meta:
         app_label = 'cms'
