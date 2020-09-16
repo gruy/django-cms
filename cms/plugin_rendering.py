@@ -542,6 +542,9 @@ class ContentRenderer(BaseRenderer):
         if not instance or not plugin.render_plugin:
             return ""
 
+        if not self.request.user.is_authenticated and instance.auth_only:
+            return ""
+
         # we'd better pass a flat dict to template.render
         # as plugin.render can return pretty much any kind of context / dictionary
         # we'd better flatten it and force to a Context object
