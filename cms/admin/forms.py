@@ -1238,7 +1238,7 @@ class PageUserGroupForm(GenericCmsPermissionForm):
 
     class Meta:
         model = PageUserGroup
-        fields = ('name', )
+        fields = ('name',)
 
     def save(self, commit=True):
         if not self.instance.pk:
@@ -1295,6 +1295,14 @@ class PluginAddValidationForm(forms.Form):
                 message = gettext("Parent plugin placeholder must be same as placeholder!")
                 self.add_error('placeholder_id', message)
                 return self.cleaned_data
+
+            inst = parent_plugin.get_plugin_class_instance()
+            if hasattr(inst, 'max_children'):
+                children = len([v for v in parent_plugin.get_children() if v.get_plugin_instance()[0] is not None])
+                if children >= inst.max_children:
+                    message = gettext("A parent plugin can have a maximum of children (%s)" % inst.max_children)
+                    self.add_error('placeholder_id', message)
+                    return self.cleaned_data
 
         page = placeholder.page
         template = page.get_template() if page else None
