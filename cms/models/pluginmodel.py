@@ -109,7 +109,22 @@ class CMSPlugin(MP_Node, metaclass=PluginModelBase):
     creation_date = models.DateTimeField(_("creation date"), editable=False, default=timezone.now)
     changed_date = models.DateTimeField(auto_now=True)
     child_plugin_instances = None
+
+    # Special fields for meandre.ru and andrgavr.com projects only
+    # according to the customer's requirements,
+    # each plugin must have settings for the site layout grid,
+    # but without creating an intermediate plugin for this
+    COLS_CHOICES = list((s, s) for s in range(1, 5))
+    VERTICAL_CHOICES = (
+        ('start', 'start'),
+        ('center', 'center'),
+        ('end', 'end'),
+    )
     auth_only = models.BooleanField(_('show for auth users only'), default=False)
+    cols_width = models.IntegerField(_('width'), choices=COLS_CHOICES, default=1)
+    cols_height = models.IntegerField(_('height'), choices=COLS_CHOICES, default=1)
+    cols_start = models.IntegerField(_('start column'), choices=COLS_CHOICES, default=1)
+    cell_vertical = models.CharField(_('vertical align'), choices=VERTICAL_CHOICES, max_length=16, default='start')
 
     class Meta:
         app_label = 'cms'
@@ -219,7 +234,7 @@ class CMSPlugin(MP_Node, metaclass=PluginModelBase):
         pages = self.placeholder.page_set.all()
         if pages.exists():
             return pages[0].get_media_path(filename)
-        else:  # django 1.0.2 compatibility
+        else: # django 1.0.2 compatibility
             today = date.today()
             return os.path.join(get_cms_setting('PAGE_MEDIA_PATH'),
                                 str(today.year), str(today.month), str(today.day), filename)
@@ -314,7 +329,7 @@ class CMSPlugin(MP_Node, metaclass=PluginModelBase):
         """
         try:
             plugin_instance, cls = self.get_plugin_instance()
-        except KeyError:  # plugin type not found anymore
+        except KeyError: # plugin type not found anymore
             return
 
         # set up some basic attributes on the new_plugin

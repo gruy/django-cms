@@ -344,6 +344,18 @@ class PlaceholderAdminMixin:
 
         if plugin:
             plugin.placeholder.mark_as_dirty(plugin.language, clear_cache=False)
+            # Special fields for meandre.ru and andrgavr.com projects only
+            # according to the customer's requirements,
+            # each plugin must have settings for the site layout grid,
+            # but without creating an intermediate plugin for this
+            cols_width = request.POST.get('cols_width', 1)
+            cols_height = request.POST.get('cols_height', 1)
+            cols_start = request.POST.get('cols_start', 1)
+            cell_vertical = request.POST.get('cell_vertical', 'start')
+            plugin.update(
+                cols_width=cols_width, cols_height=cols_height,
+                cols_start=cols_start, cell_vertical=cell_vertical,
+            )
 
             if parent:
                 _inst, _ = parent.get_plugin_instance()
@@ -776,7 +788,15 @@ class PlaceholderAdminMixin:
 
         # If an ordering was supplied, replace the item that has
         # been copied with the new copy
-        target_tree_order.insert(tree_order.index('__COPY__'), root_plugin.pk)
+        # Insert ordering for meandre.ru and andrgavr.com projects only
+        # according to the customer's requirements
+        _index = tree_order.index('__COPY__')
+        _parent = root_plugin.parent
+        if _parent:
+            _inst, _ = _parent.get_plugin_instance()
+            if getattr(_inst, 'new_to_top', False):
+                _index = 0
+        target_tree_order.insert(_index, root_plugin.pk)
 
         reorder_plugins(
             target_placeholder,
@@ -1042,7 +1062,7 @@ class PlaceholderAdminMixin:
             **get_deleted_objects_additional_kwargs
         )
 
-        if request.POST:  # The user has already confirmed the deletion.
+        if request.POST: # The user has already confirmed the deletion.
             if perms_needed:
                 raise PermissionDenied(_("You do not have permission to delete this plugin"))
             obj_display = force_text(plugin)
