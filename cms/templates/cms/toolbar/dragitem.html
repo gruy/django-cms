@@ -45,6 +45,10 @@
                         <span class="cms-submenu-item-paste-tooltip cms-submenu-item-paste-tooltip-restricted cms-hover-tooltip cms-hover-tooltip-left cms-hover-tooltip-delay" data-cms-tooltip="{% translate "This plugin does not allow plugins of this type as nested plugins." %}"></span>
                         <span class="cms-submenu-item-paste-tooltip cms-submenu-item-paste-tooltip-disabled cms-hover-tooltip cms-hover-tooltip-left cms-hover-tooltip-delay" data-cms-tooltip="{% translate "This plugin cannot have nested plugins." %}"></span>
                     </div>
+                    <div class="cms-submenu-item">
+                        <a data-cms-icon="paste" data-rel="paste-after" href="#">{% trans "Paste after" %}</a>
+                        <span class="cms-submenu-item-paste-tooltip cms-submenu-item-paste-tooltip-empty cms-hover-tooltip cms-hover-tooltip-left cms-hover-tooltip-delay" data-cms-tooltip="{% trans "Clipboard is empty." %}"></span>
+                    </div>
                     <div class="cms-submenu-item"><a data-cms-icon="bin" data-rel="delete" href="#">{% translate "Delete" %}</a></div>
                 {% endif %}
                 {% render_extra_menu_items plugin %}
