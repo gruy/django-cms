@@ -725,6 +725,33 @@ var Plugin = new Class({
     },
 
     /**
+     * Method is called when you click on the paste after button on the plugin.
+     * Uses existing solution of `copyPlugin(options)`
+     *
+     * @method pasteAfterPlugin
+     */
+    pasteAfterPlugin: function() {
+        var id = this._getId(clipboardDraggable);
+        var eventData = {
+            id: id
+        };
+        var selected = $(`.cms-draggable-${this.options.plugin_id}`);
+
+        // создается копия плашки
+        const clipboardDraggableClone = clipboardDraggable.clone(true, true);
+        // и добавляется на панель после выбранного плагина
+        selected.after(clipboardDraggableClone);
+
+        if (this.options.plugin_id) {
+            StructureBoard.actualizePluginCollapseStatus(this.options.plugin_id);
+        }
+
+        this.ui.draggables.trigger('cms-structure-update', [eventData]);
+        // запускает вставку плагина на сервере
+        clipboardDraggableClone.trigger('cms-paste-plugin-update', [eventData]);
+    },
+
+    /**
      * Moves plugin by querying the API and then updates some UI parts
      * to reflect that the page has changed.
      *
@@ -1378,6 +1405,12 @@ var Plugin = new Class({
                 hideLoader();
                 if (!el.parent().hasClass('cms-submenu-item-disabled')) {
                     that.pastePlugin();
+                }
+                break;
+            case 'paste-after':
+                hideLoader();
+                if (!el.parent().hasClass('cms-submenu-item-disabled')) {
+                    that.pasteAfterPlugin();
                 }
                 break;
             case 'delete':
