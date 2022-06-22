@@ -140,7 +140,14 @@ class TitleExtension(BaseExtension):
         return self.extended_object.page
 
     def save(self, *args, **kwargs):
-        if kwargs.pop('mark_page', True):
+        mark_page = kwargs.pop('mark_page', True)
+        # mark page as published when change and publish extension
+        if self.public_extension:
+            title = self.extended_object
+            page = self.get_page()
+            if page.publisher_is_draft and title.publisher_public:
+                mark_page = False
+        if mark_page:
             Title.objects.filter(pk=self.extended_object.pk).update(
                 publisher_state=PUBLISHER_STATE_DIRTY) # mark title dirty
         return super(BaseExtension, self).save(*args, **kwargs)
