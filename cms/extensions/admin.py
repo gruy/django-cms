@@ -69,6 +69,11 @@ class PageContentExtensionAdmin(ExtensionAdmin):
         if not user_can_change_page(request.user, page=content.page):
             raise PermissionDenied()
         super().save_model(request, obj, form, change)
+        # we publish the extension immediately, without the need to publish the page
+        if obj.public_extension:
+            page = obj.get_page()
+            if page.publisher_is_draft and title.publisher_public:
+                obj.copy_to_public(obj.public_extension.extended_object, title.language)
 
     def delete_model(self, request, obj):
         page = obj.extended_object.page
