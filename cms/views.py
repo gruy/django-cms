@@ -4,6 +4,7 @@ from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.contrib.auth import login as auth_login
 from django.contrib.auth.views import redirect_to_login
+from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.utils.cache import patch_cache_control
@@ -15,7 +16,7 @@ from django.views.decorators.http import require_POST
 from cms.cache.page import get_page_cache
 from cms.exceptions import LanguageError
 from cms.forms.login import CMSToolbarLoginForm
-from cms.models.pagemodel import TreeNode
+from cms.models.pagemodel import Page, TreeNode
 from cms.page_rendering import _handle_no_page, _render_welcome_page, render_object_structure, render_page
 from cms.toolbar.utils import get_toolbar_from_request
 from cms.utils import get_current_site
@@ -188,6 +189,8 @@ def details(request, slug):
 
     # permission checks
     if page.login_required and not request.user.is_authenticated:
+        if hasattr(settings, 'CMS_PERMISSION_SHOW_PAGE_403'):
+            raise PermissionDenied
         return redirect_to_login(quote(request.get_full_path()), settings.LOGIN_URL)
 
     if hasattr(request, 'toolbar'):
