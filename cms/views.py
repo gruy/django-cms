@@ -5,7 +5,7 @@ from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME, login as auth_login
 from django.contrib.auth.views import redirect_to_login
 from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.http import (
     Http404,
     HttpResponse,
@@ -202,6 +202,8 @@ def details(request, slug):
 
     # permission checks
     if page.login_required and not request.user.is_authenticated:
+        if hasattr(settings, 'CMS_PERMISSION_SHOW_PAGE_403'):
+            raise PermissionDenied
         return redirect_to_login(quote(request.get_full_path()), settings.LOGIN_URL)
 
     content_language = request_language
